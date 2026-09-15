@@ -1,0 +1,541 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Student - Student Management System</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <aside class="sidebar">
+
+            <h2>StudentMS</h2>
+
+            <nav>
+
+                <a href="dashboard.html">
+                    Dashboard
+                </a>
+
+                <a href="add-student.html">
+                    Add Student
+                </a>
+
+                <a href="students.html">
+                    View Students
+                </a>
+<a href="logout">
+    Logout
+</a>
+            </nav>
+
+        </aside>
+
+
+        <main class="main-content">
+
+            <header>
+
+                <h1>Edit Student</h1>
+
+                <p>
+                    Update the student's information below.
+                </p>
+
+            </header>
+
+
+            <!-- Message -->
+
+            <div id="message"
+                 class="message"
+                 style="display: none;">
+            </div>
+
+
+            <div class="form-container">
+
+                <form id="studentForm">
+
+                    <!-- Student ID -->
+
+                    <div class="form-group">
+
+                        <label for="id">
+                            Student ID
+                        </label>
+
+                        <input
+                            type="number"
+                            id="id"
+                            name="id"
+                            readonly
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Name -->
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            minlength="2"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Age -->
+
+                    <div class="form-group">
+
+                        <label for="age">
+                            Age
+                        </label>
+
+                        <input
+                            type="number"
+                            id="age"
+                            name="age"
+                            min="16"
+                            max="100"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Course -->
+
+                    <div class="form-group">
+
+                        <label for="course">
+                            Course
+                        </label>
+
+                        <input
+                            type="text"
+                            id="course"
+                            name="course"
+                            minlength="2"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Email -->
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Gender -->
+
+                    <div class="form-group">
+
+                        <label for="gender">
+                            Gender
+                        </label>
+
+                        <select
+                            id="gender"
+                            name="gender"
+                            required
+                        >
+
+                            <option value="">
+                                Select gender
+                            </option>
+
+                            <option value="Male">
+                                Male
+                            </option>
+
+                            <option value="Female">
+                                Female
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Buttons -->
+
+                    <div class="form-buttons">
+
+                        <button type="submit">
+                            Update Student
+                        </button>
+
+                        <a href="students.html">
+                            Cancel
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <script>
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const studentId =
+            params.get("id");
+
+
+        const form =
+            document.getElementById("studentForm");
+
+        const message =
+            document.getElementById("message");
+
+
+        // Check Student ID
+
+        if (!studentId) {
+
+            showMessage(
+                "Student ID not found.",
+                "error"
+            );
+
+            setTimeout(function() {
+
+                window.location.href =
+                    "students.html";
+
+            }, 1500);
+
+        }
+
+
+        // Load student information
+
+        if (studentId) {
+
+            fetch(
+                "student?id=" + studentId
+            )
+
+            .then(function(response) {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Student not found"
+                    );
+
+                }
+
+                return response.json();
+
+            })
+
+            .then(function(student) {
+
+                document.getElementById("id").value =
+                    student.id;
+
+                document.getElementById("name").value =
+                    student.name;
+
+                document.getElementById("age").value =
+                    student.age;
+
+                document.getElementById("course").value =
+                    student.course;
+
+                document.getElementById("email").value =
+                    student.email;
+
+                document.getElementById("gender").value =
+                    student.gender || "";
+
+            })
+
+            .catch(function(error) {
+
+                console.error(error);
+
+                showMessage(
+                    "Unable to load student information.",
+                    "error"
+                );
+
+            });
+
+        }
+
+
+        // Submit form
+
+        form.addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+
+                const id =
+                    document.getElementById("id")
+                        .value
+                        .trim();
+
+                const name =
+                    document.getElementById("name")
+                        .value
+                        .trim();
+
+                const age =
+                    document.getElementById("age")
+                        .value
+                        .trim();
+
+                const course =
+                    document.getElementById("course")
+                        .value
+                        .trim();
+
+                const email =
+                    document.getElementById("email")
+                        .value
+                        .trim();
+
+                const gender =
+                    document.getElementById("gender")
+                        .value;
+
+
+                // Validation
+
+                if (
+                    !id ||
+                    !name ||
+                    !age ||
+                    !course ||
+                    !email ||
+                    !gender
+                ) {
+
+                    showMessage(
+                        "Please fill in all fields.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                if (name.length < 2) {
+
+                    showMessage(
+                        "Name must contain at least 2 characters.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                if (age < 16 || age > 100) {
+
+                    showMessage(
+                        "Age must be between 16 and 100.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                if (course.length < 2) {
+
+                    showMessage(
+                        "Course name must contain at least 2 characters.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                // Prepare form data
+
+                const formData =
+                    new URLSearchParams();
+
+                formData.append(
+                    "id",
+                    id
+                );
+
+                formData.append(
+                    "name",
+                    name
+                );
+
+                formData.append(
+                    "age",
+                    age
+                );
+
+                formData.append(
+                    "course",
+                    course
+                );
+
+                formData.append(
+                    "email",
+                    email
+                );
+
+                formData.append(
+                    "gender",
+                    gender
+                );
+
+
+                // Send update to Servlet
+
+                fetch(
+                    "updateStudent",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/x-www-form-urlencoded"
+
+                        },
+
+                        body:
+                            formData.toString()
+
+                    }
+                )
+
+                .then(function(response) {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "Update failed"
+                        );
+
+                    }
+
+                    if (response.redirected) {
+
+                        window.location.href =
+                            response.url;
+
+                        return null;
+
+                    }
+
+                    return response.text();
+
+                })
+
+                .then(function(result) {
+
+                    if (result) {
+
+                        showMessage(
+                            result,
+                            "error"
+                        );
+
+                    }
+
+                })
+
+                .catch(function(error) {
+
+                    console.error(error);
+
+                    showMessage(
+                        "Unable to update student. Please try again.",
+                        "error"
+                    );
+
+                });
+
+            }
+        );
+
+
+        function showMessage(
+            text,
+            type
+        ) {
+
+            message.textContent =
+                text;
+
+            message.className =
+                "message " + type;
+
+            message.style.display =
+                "block";
+
+        }
+
+    </script>
+
+</body>
+
+</html>
+```

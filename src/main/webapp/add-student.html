@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Add Student - Student Management System</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <h2>StudentMS</h2>
+
+            <nav>
+
+                <a href="dashboard.html">
+                    Dashboard
+                </a>
+
+                <a href="add-student.html">
+                    Add Student
+                </a>
+
+                <a href="students.html">
+                    View Students
+                </a>
+                <a href="logout">
+    Logout
+</a>
+
+            </nav>
+
+        </aside>
+
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <header>
+
+                <h1>Add Student</h1>
+
+                <p>
+                    Enter the student's information below.
+                </p>
+
+            </header>
+
+
+            <!-- Message -->
+            <div id="message"
+                 class="message"
+                 style="display: none;">
+            </div>
+
+
+            <!-- Form -->
+            <div class="form-container">
+
+                <form id="studentForm">
+
+                    <!-- Student ID -->
+                    <div class="form-group">
+
+                        <label for="id">
+                            Student ID
+                        </label>
+
+                        <input
+                            type="number"
+                            id="id"
+                            name="id"
+                            placeholder="Enter student ID"
+                            min="1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Name -->
+                    <div class="form-group">
+
+                        <label for="name">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="Enter full name"
+                            minlength="2"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Age -->
+                    <div class="form-group">
+
+                        <label for="age">
+                            Age
+                        </label>
+
+                        <input
+                            type="number"
+                            id="age"
+                            name="age"
+                            placeholder="Enter age"
+                            min="16"
+                            max="100"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Course -->
+                    <div class="form-group">
+
+                        <label for="course">
+                            Course
+                        </label>
+
+                        <input
+                            type="text"
+                            id="course"
+                            name="course"
+                            placeholder="Enter course"
+                            minlength="2"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Email -->
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter email address"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Gender -->
+                    <div class="form-group">
+
+                        <label for="gender">
+                            Gender
+                        </label>
+
+                        <select
+                            id="gender"
+                            name="gender"
+                            required
+                        >
+
+                            <option value="">
+                                Select gender
+                            </option>
+
+                            <option value="Male">
+                                Male
+                            </option>
+
+                            <option value="Female">
+                                Female
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Buttons -->
+                    <div class="form-buttons">
+
+                        <button type="submit">
+                            Add Student
+                        </button>
+
+                        <a href="students.html">
+                            Cancel
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <script>
+
+        const form =
+            document.getElementById("studentForm");
+
+        const message =
+            document.getElementById("message");
+
+
+        form.addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+
+                // Get values
+                const id =
+                    document.getElementById("id").value.trim();
+
+                const name =
+                    document.getElementById("name").value.trim();
+
+                const age =
+                    document.getElementById("age").value.trim();
+
+                const course =
+                    document.getElementById("course").value.trim();
+
+                const email =
+                    document.getElementById("email").value.trim();
+
+                const gender =
+                    document.getElementById("gender").value;
+
+
+                // Validation
+                if (!id || !name || !age ||
+                    !course || !email || !gender) {
+
+                    showMessage(
+                        "Please fill in all fields.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                if (name.length < 2) {
+
+                    showMessage(
+                        "Name must contain at least 2 characters.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                if (age < 16 || age > 100) {
+
+                    showMessage(
+                        "Age must be between 16 and 100.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                // Send data to Java Servlet
+                const formData =
+                    new URLSearchParams();
+
+                formData.append("id", id);
+                formData.append("name", name);
+                formData.append("age", age);
+                formData.append("course", course);
+                formData.append("email", email);
+                formData.append("gender", gender);
+
+
+                fetch("addStudent", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/x-www-form-urlencoded"
+                    },
+
+                    body: formData.toString()
+
+                })
+
+                .then(function(response) {
+
+                    if (response.redirected) {
+
+                        window.location.href =
+                            response.url;
+
+                        return;
+                    }
+
+                    return response.text();
+
+                })
+
+                .then(function(result) {
+
+                    if (result) {
+
+                        showMessage(
+                            result,
+                            "error"
+                        );
+
+                    }
+
+                })
+
+                .catch(function(error) {
+
+                    console.error(error);
+
+                    showMessage(
+                        "Unable to add student. Please try again.",
+                        "error"
+                    );
+
+                });
+
+            }
+        );
+
+
+        function showMessage(text, type) {
+
+            message.textContent = text;
+
+            message.className =
+                "message " + type;
+
+            message.style.display =
+                "block";
+
+        }
+
+    </script>
+
+</body>
+
+</html>
